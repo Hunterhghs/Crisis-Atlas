@@ -85,6 +85,7 @@ export interface GlobalSummary {
   averageScore: number;
   worstCountries: CrisisCountrySummary[];
   bestCountries: CrisisCountrySummary[];
+  allCountries: CrisisCountrySummary[];
   globalTrend: 'improving' | 'stable' | 'worsening' | 'critical';
   /** Inclusive year range of the underlying data. */
   yearRange: [number, number];

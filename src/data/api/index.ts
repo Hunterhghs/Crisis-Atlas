@@ -147,6 +147,7 @@ export async function fetchGlobalSummary(crisisId: CrisisId): Promise<GlobalSumm
       averageScore: 0,
       worstCountries: [],
       bestCountries: [],
+      allCountries: [],
       globalTrend: 'stable',
       yearRange: [2023, 2023],
     };
@@ -165,6 +166,7 @@ export async function fetchGlobalSummary(crisisId: CrisisId): Promise<GlobalSumm
     averageScore: parseFloat(avgScore.toFixed(1)),
     worstCountries: summaries.slice(0, 10),
     bestCountries: [...summaries].reverse().slice(0, 10),
+    allCountries: summaries,
     globalTrend,
     yearRange: [2023, 2023],
   };
@@ -204,6 +206,7 @@ function createEmptySummary(crisisId: CrisisId): GlobalSummary {
     averageScore: 0,
     worstCountries: [],
     bestCountries: [],
+    allCountries: [],
     globalTrend: 'stable',
     yearRange: [2023, 2023],
   };

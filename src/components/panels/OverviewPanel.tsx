@@ -37,8 +37,7 @@ export default function OverviewPanel({ summaries, loading }: OverviewPanelProps
   const countryScoreMap = useMemo(() => {
     const map = new Map<string, number>();
     if (!summary) return map;
-    for (const c of summary.worstCountries) map.set(c.countryIso3, c.compositeScore);
-    for (const c of summary.bestCountries) map.set(c.countryIso3, c.compositeScore);
+    for (const c of summary.allCountries) map.set(c.countryIso3, c.compositeScore);
     return map;
   }, [summary]);
 
