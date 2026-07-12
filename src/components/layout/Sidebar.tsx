@@ -1,4 +1,5 @@
 import { CrisisId, PanelView } from '../../types';
+import { CrisisDot } from '../shared/CrisisDot';
 
 interface SidebarProps {
   activePanel: PanelView;
@@ -7,16 +8,16 @@ interface SidebarProps {
   onToggleCollapse: () => void;
 }
 
-const CRISIS_LIST: { id: CrisisId; label: string; icon: string; color: string }[] = [
-  { id: 'climate', label: 'Climate Change', icon: '🌡️', color: '#e3120b' },
-  { id: 'pollution', label: 'Pollution', icon: '🏭', color: '#8b5cf6' },
-  { id: 'poverty', label: 'Poverty & Inequality', icon: '🪙', color: '#f59e0b' },
-  { id: 'cybercrime', label: 'Cybercrime', icon: '🔐', color: '#06b6d4' },
-  { id: 'food-security', label: 'Food & Water', icon: '🌾', color: '#84cc16' },
-  { id: 'conflict', label: 'Conflict', icon: '🕊️', color: '#ef4444' },
-  { id: 'pandemic', label: 'Pandemics', icon: '🦠', color: '#ec4899' },
-  { id: 'biodiversity', label: 'Biodiversity', icon: '🌿', color: '#10b981' },
-  { id: 'democracy', label: 'Democracy', icon: '🗳️', color: '#6366f1' },
+const CRISIS_LIST: { id: CrisisId; label: string; color: string }[] = [
+  { id: 'climate', label: 'Climate Change', color: '#e3120b' },
+  { id: 'pollution', label: 'Pollution', color: '#8b5cf6' },
+  { id: 'poverty', label: 'Poverty & Inequality', color: '#f59e0b' },
+  { id: 'cybercrime', label: 'Cybercrime', color: '#06b6d4' },
+  { id: 'food-security', label: 'Food & Water', color: '#84cc16' },
+  { id: 'conflict', label: 'Conflict', color: '#ef4444' },
+  { id: 'pandemic', label: 'Pandemics', color: '#ec4899' },
+  { id: 'biodiversity', label: 'Biodiversity', color: '#10b981' },
+  { id: 'democracy', label: 'Democracy', color: '#6366f1' },
 ];
 
 export default function Sidebar({ activePanel, onPanelChange, collapsed, onToggleCollapse }: SidebarProps) {
@@ -74,7 +75,7 @@ export default function Sidebar({ activePanel, onPanelChange, collapsed, onToggl
               : 'text-economist-slate hover:bg-gray-50'
           }`}
         >
-          <span className="text-lg flex-shrink-0">🌐</span>
+          <span className="flex-shrink-0"><CrisisDot color="#6b7280" size={8} /></span>
           {!collapsed && (
             <span className="font-sans text-sm font-medium leading-none">Overview</span>
           )}
@@ -99,7 +100,7 @@ export default function Sidebar({ activePanel, onPanelChange, collapsed, onToggl
               className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-0 group-hover:h-6 transition-all duration-200 rounded-r-full"
               style={{ backgroundColor: activePanel === crisis.id ? crisis.color : 'transparent' }}
             />
-            <span className="text-lg flex-shrink-0">{crisis.icon}</span>
+            <span className="flex-shrink-0"><CrisisDot color={crisis.color} size={8} /></span>
             {!collapsed && (
               <div className="min-w-0">
                 <span className="font-sans text-sm font-medium leading-tight block truncate">
@@ -122,7 +123,7 @@ export default function Sidebar({ activePanel, onPanelChange, collapsed, onToggl
               : 'text-economist-slate hover:bg-gray-50'
           }`}
         >
-          <span className="text-lg flex-shrink-0">🔗</span>
+          <span className="flex-shrink-0"><CrisisDot color="#6b7280" size={8} /></span>
           {!collapsed && (
             <span className="font-sans text-sm font-medium leading-none">Cross-Crisis Links</span>
           )}

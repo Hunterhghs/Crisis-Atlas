@@ -19,7 +19,7 @@ export default function KpiCard({ label, value, unit, trend, subtitle, color }: 
     improving: '↓',
     stable: '→',
     worsening: '↑',
-    critical: '⚠',
+    critical: '!',
   };
 
   return (

@@ -30,17 +30,17 @@ export async function fetchCrisisData(
     try {
       const liveData = await getCrisisDataFromWB(metricId, 2023);
       if (liveData.length > 0) {
-        console.log(`✅ Live data: ${crisisId}/${metricId} (${liveData.length} points)`);
+        console.log(`Live data: ${crisisId}/${metricId} (${liveData.length} points)`);
         return liveData;
       }
     } catch (err) {
-      console.warn(`⚠️ Live API failed for ${crisisId}/${metricId}, using fallback`);
+      console.warn(`Live API failed for ${crisisId}/${metricId}, using fallback`);
     }
   }
 
   // Fall back to static data
   const data = getFallbackData(crisisId).filter(d => d.metricId === metricId);
-  console.log(`📦 Static data: ${crisisId}/${metricId} (${data.length} points)`);
+  console.log(`Static data: ${crisisId}/${metricId} (${data.length} points)`);
   return data;
 }
 

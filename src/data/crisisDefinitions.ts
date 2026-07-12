@@ -6,7 +6,7 @@ const CRISIS_DEFINITIONS: CrisisDefinition[] = [
     label: 'Climate Change',
     shortLabel: 'Climate',
     description: 'Rising temperatures, extreme weather, and carbon emissions threatening planetary boundaries.',
-    icon: '🌡️',
+    icon: '',
     color: '#e3120b',
     category: 'environmental',
     metrics: [
@@ -24,7 +24,7 @@ const CRISIS_DEFINITIONS: CrisisDefinition[] = [
     label: 'Pollution',
     shortLabel: 'Pollution',
     description: 'Air, water, and plastic pollution degrading environmental health and human wellbeing.',
-    icon: '🏭',
+    icon: '',
     color: '#8b5cf6',
     category: 'environmental',
     metrics: [
@@ -42,7 +42,7 @@ const CRISIS_DEFINITIONS: CrisisDefinition[] = [
     label: 'Poverty & Inequality',
     shortLabel: 'Poverty',
     description: 'Extreme poverty, wealth concentration, and structural barriers to economic opportunity.',
-    icon: '🪙',
+    icon: '',
     color: '#f59e0b',
     category: 'social',
     metrics: [
@@ -60,7 +60,7 @@ const CRISIS_DEFINITIONS: CrisisDefinition[] = [
     label: 'Cybercrime',
     shortLabel: 'Cybercrime',
     description: 'Ransomware, data breaches, and digital infrastructure attacks rising globally.',
-    icon: '🔐',
+    icon: '',
     color: '#06b6d4',
     category: 'technological',
     metrics: [
@@ -78,7 +78,7 @@ const CRISIS_DEFINITIONS: CrisisDefinition[] = [
     label: 'Food & Water Security',
     shortLabel: 'Food Security',
     description: 'Hunger, malnutrition, water scarcity, and food system fragility under climate stress.',
-    icon: '🌾',
+    icon: '',
     color: '#84cc16',
     category: 'social',
     metrics: [
@@ -96,7 +96,7 @@ const CRISIS_DEFINITIONS: CrisisDefinition[] = [
     label: 'Conflict & Displacement',
     shortLabel: 'Conflict',
     description: 'Armed conflict, forced displacement, and political violence reshaping populations.',
-    icon: '🕊️',
+    icon: '',
     color: '#ef4444',
     category: 'political',
     metrics: [
@@ -115,7 +115,7 @@ const CRISIS_DEFINITIONS: CrisisDefinition[] = [
     label: 'Pandemic Preparedness',
     shortLabel: 'Pandemics',
     description: 'Health system resilience, vaccine coverage, and readiness for the next global outbreak.',
-    icon: '🦠',
+    icon: '',
     color: '#ec4899',
     category: 'social',
     metrics: [
@@ -133,7 +133,7 @@ const CRISIS_DEFINITIONS: CrisisDefinition[] = [
     label: 'Biodiversity Loss',
     shortLabel: 'Biodiversity',
     description: 'Species extinction, habitat destruction, and ecosystem collapse at accelerating rates.',
-    icon: '🌿',
+    icon: '',
     color: '#10b981',
     category: 'environmental',
     metrics: [
@@ -151,7 +151,7 @@ const CRISIS_DEFINITIONS: CrisisDefinition[] = [
     label: 'Democratic Backsliding',
     shortLabel: 'Democracy',
     description: 'Erosion of democratic institutions, press freedom, and rule of law worldwide.',
-    icon: '🗳️',
+    icon: '',
     color: '#6366f1',
     category: 'political',
     metrics: [

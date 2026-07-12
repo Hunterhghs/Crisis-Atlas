@@ -4,6 +4,7 @@ import { LatLngExpression } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { CrisisId, GlobalSummary } from '../../types';
 import { getAllCrisisDefinitions, getCrisisColor } from '../../data/crisisDefinitions';
+import { CrisisDot } from '../shared/CrisisDot';
 import KpiCard from '../shared/KpiCard';
 import LoadingSpinner from '../shared/LoadingSpinner';
 
@@ -87,7 +88,7 @@ export default function OverviewPanel({ summaries, loading }: OverviewPanelProps
                 : {}
             }
           >
-            <span>{crisis.icon}</span>
+            <span className="flex-shrink-0"><CrisisDot color={crisis.color} size={10} /></span>
             {crisis.shortLabel}
           </button>
         ))}
@@ -228,7 +229,7 @@ export default function OverviewPanel({ summaries, loading }: OverviewPanelProps
                 }`}
               >
                 <div className="flex items-center gap-2 mb-2">
-                  <span className="text-base">{crisis.icon}</span>
+                  <span className="flex-shrink-0"><CrisisDot color={crisis.color} size={8} /></span>
                   <span className="font-sans text-xs font-semibold text-economist-navy">{crisis.shortLabel}</span>
                 </div>
                 <div className="font-serif text-xl font-bold" style={{ color: crisis.color }}>

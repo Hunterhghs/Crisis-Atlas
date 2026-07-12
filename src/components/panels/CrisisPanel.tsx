@@ -4,6 +4,7 @@ import {
 } from 'recharts';
 import { CrisisId, GlobalSummary } from '../../types';
 import { getCrisisDefinition } from '../../data/crisisDefinitions';
+import { CrisisDot } from '../shared/CrisisDot';
 import KpiCard from '../shared/KpiCard';
 import DataSources from '../shared/DataSources';
 import LoadingSpinner from '../shared/LoadingSpinner';
@@ -33,7 +34,7 @@ export default function CrisisPanel({ crisisId, summary, loading }: CrisisPanelP
       {/* Header */}
       <div className="mb-8">
         <div className="flex items-center gap-3 mb-3">
-          <span className="text-3xl">{crisis.icon}</span>
+          <span className="flex-shrink-0 mt-1"><CrisisDot color={crisis.color} size={14} /></span>
           <div>
             <p className="font-sans text-xs font-semibold uppercase tracking-[0.2em] mb-0.5"
                style={{ color: crisis.color }}>
