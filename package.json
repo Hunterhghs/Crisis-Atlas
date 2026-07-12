@@ -4,8 +4,8 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc -b && vite build",
+    "dev": "cp index.dev.html index.html && vite",
+    "build": "tsc -b && vite build && cp docs/index.html docs/favicon.svg docs/CNAME . 2>/dev/null; cp -r docs/assets . 2>/dev/null; true",
     "lint": "oxlint",
     "preview": "vite preview"
   },
