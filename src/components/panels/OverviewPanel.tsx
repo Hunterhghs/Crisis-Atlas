@@ -1,15 +1,13 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { MapContainer, TileLayer, GeoJSON } from 'react-leaflet';
 import { LatLngExpression } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { CrisisId, GlobalSummary } from '../../types';
+import { CrisisId, GlobalSummary, CrisisCountrySummary } from '../../types';
 import { getAllCrisisDefinitions, getCrisisColor } from '../../data/crisisDefinitions';
 import { CrisisDot } from '../shared/CrisisDot';
 import KpiCard from '../shared/KpiCard';
 import LoadingSpinner from '../shared/LoadingSpinner';
 
-// Simplified world country geometries (low-res for performance)
-// We'll load GeoJSON dynamically
 const WORLD_GEOJSON_URL = 'https://raw.githubusercontent.com/datasets/geo-countries/master/data/countries.geojson';
 
 interface OverviewPanelProps {
@@ -30,28 +28,57 @@ export default function OverviewPanel({ summaries, loading }: OverviewPanelProps
   }, []);
 
   const summary = summaries[selectedCrisis];
+  const crisisDef = crises.find(c => c.id === selectedCrisis)!;
   const crisisColor = getCrisisColor(selectedCrisis);
 
   const mapCenter: LatLngExpression = [20, 0];
 
+  // Build full country score map from all available summary data
+  const countryScoreMap = useMemo(() => {
+    const map = new Map<string, number>();
+    if (!summary) return map;
+    for (const c of summary.worstCountries) map.set(c.countryIso3, c.compositeScore);
+    for (const c of summary.bestCountries) map.set(c.countryIso3, c.compositeScore);
+    return map;
+  }, [summary]);
+
+  const allScores = useMemo(() => Array.from(countryScoreMap.values()), [countryScoreMap]);
+  const minScore = allScores.length > 0 ? Math.min(...allScores) : 0;
+  const maxScore = allScores.length > 0 ? Math.max(...allScores) : 100;
+
+  // Generate a gradient color between light grey and the crisis color based on score
+  const scoreToColor = (score: number): string => {
+    const ratio = maxScore > minScore ? (score - minScore) / (maxScore - minScore) : 0.5;
+    // Interpolate from #f3f4f6 (light grey) to crisisColor
+    const r1 = 0xf3, g1 = 0xf4, b1 = 0xf6;
+    const r2 = parseInt(crisisColor.slice(1, 3), 16);
+    const g2 = parseInt(crisisColor.slice(3, 5), 16);
+    const b2 = parseInt(crisisColor.slice(5, 7), 16);
+    const r = Math.round(r1 + (r2 - r1) * ratio);
+    const g = Math.round(g1 + (g2 - g1) * ratio);
+    const b = Math.round(b1 + (b2 - b1) * ratio);
+    return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
+  };
+
   const getCountryStyle = (feature: any) => {
     const iso3 = feature?.properties?.ISO_A3;
-    if (!iso3 || !summary) return { fillColor: '#f3f4f6', weight: 0.5, color: '#d1d5db', fillOpacity: 0.5 };
-
-    const countrySummary = summary.worstCountries.find(c => c.countryIso3 === iso3) ??
-                           summary.bestCountries.find(c => c.countryIso3 === iso3);
-    const opacity = countrySummary ? 0.8 : 0.3;
-    const fillColor = countrySummary
-      ? crisisColor
-      : '#e5e7eb';
-
+    if (!iso3 || !summary) {
+      return { fillColor: '#f3f4f6', weight: 0.5, color: '#d1d5db', fillOpacity: 0.5 };
+    }
+    const score = countryScoreMap.get(iso3);
+    if (score === undefined) {
+      return { fillColor: '#f3f4f6', weight: 0.3, color: '#e5e7eb', fillOpacity: 0.4 };
+    }
     return {
-      fillColor,
+      fillColor: scoreToColor(score),
       weight: 0.5,
       color: '#ffffff',
-      fillOpacity: opacity,
+      fillOpacity: 0.85,
     };
   };
+
+  // Legend gradient stops (5 levels)
+  const legendStops = [0, 0.25, 0.5, 0.75, 1.0];
 
   return (
     <div className="animate-fade-in">
@@ -95,41 +122,91 @@ export default function OverviewPanel({ summaries, loading }: OverviewPanelProps
       </div>
 
       {/* World Map */}
-      <div className="bg-white border border-gray-200 rounded-lg overflow-hidden mb-6" style={{ height: '420px' }}>
+      <div className="relative bg-white border border-gray-200 rounded-lg overflow-hidden mb-6" style={{ height: '420px' }}>
         {geoData ? (
-          <MapContainer
-            center={mapCenter}
-            zoom={2}
-            style={{ height: '100%', width: '100%', backgroundColor: '#f8faf9' }}
-            zoomControl={true}
-            scrollWheelZoom={false}
-            attributionControl={false}
-          >
-            <TileLayer
-              url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
-              attribution='&copy; <a href="https://carto.com/">CARTO</a>'
-            />
-            <GeoJSON
-              data={geoData}
-              style={getCountryStyle}
-              onEachFeature={(feature: any, layer: any) => {
-                const iso3 = feature?.properties?.ISO_A3;
-                const name = feature?.properties?.ADMIN || feature?.properties?.NAME || '';
-                if (iso3 && summary) {
-                  const cs = summary.worstCountries.find(c => c.countryIso3 === iso3) ??
-                           summary.bestCountries.find(c => c.countryIso3 === iso3);
-                  const metricVal = cs?.compositeScore;
-                  layer.bindTooltip(
-                    `<div style="font-family:Inter,sans-serif;font-size:12px;">
-                      <strong>${name}</strong><br/>
-                      ${metricVal !== undefined ? `Composite: ${metricVal.toFixed(1)}` : 'No data'}
-                    </div>`,
-                    { sticky: true }
-                  );
-                }
-              }}
-            />
-          </MapContainer>
+          <>
+            <MapContainer
+              center={mapCenter}
+              zoom={2}
+              style={{ height: '100%', width: '100%', backgroundColor: '#f8faf9' }}
+              zoomControl={true}
+              scrollWheelZoom={false}
+              attributionControl={false}
+            >
+              <TileLayer
+                url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
+                attribution='&copy; <a href="https://carto.com/">CARTO</a>'
+              />
+              <GeoJSON
+                data={geoData}
+                style={getCountryStyle}
+                onEachFeature={(feature: any, layer: any) => {
+                  const iso3 = feature?.properties?.ISO_A3;
+                  const name = feature?.properties?.ADMIN || feature?.properties?.NAME || '';
+                  const score = iso3 ? countryScoreMap.get(iso3) : undefined;
+                  if (iso3 && score !== undefined) {
+                    layer.bindTooltip(
+                      `<div style="font-family:Inter,sans-serif;font-size:12px;">
+                        <strong>${name}</strong><br/>
+                        Composite score: ${score.toFixed(1)}
+                      </div>`,
+                      { sticky: true }
+                    );
+                  } else if (name) {
+                    layer.bindTooltip(
+                      `<div style="font-family:Inter,sans-serif;font-size:12px;">
+                        <strong>${name}</strong><br/>
+                        <span style="color:#9ca3af;">No data</span>
+                      </div>`,
+                      { sticky: true, opacity: 0.8 }
+                    );
+                  }
+                }}
+              />
+            </MapContainer>
+
+            {/* Map Overlay: Title */}
+            <div className="absolute top-3 left-3 z-[1000] bg-white/90 backdrop-blur-sm px-3 py-2 rounded shadow-sm border border-gray-200 pointer-events-none">
+              <p className="font-sans text-[10px] uppercase tracking-[0.15em] text-economist-muted leading-none mb-0.5">
+                {crisisDef.category}
+              </p>
+              <p className="font-serif text-sm font-bold text-economist-navy leading-tight">
+                {crisisDef.label}
+              </p>
+            </div>
+
+            {/* Map Overlay: Gradient Legend */}
+            <div className="absolute bottom-3 left-3 z-[1000] bg-white/90 backdrop-blur-sm px-3 py-2.5 rounded shadow-sm border border-gray-200">
+              <p className="font-sans text-[10px] uppercase tracking-[0.12em] text-economist-muted mb-2 leading-none">
+                Composite Score
+              </p>
+              <div className="flex items-center gap-1.5">
+                <span className="font-mono text-[10px] text-economist-muted w-7 text-right">
+                  {minScore.toFixed(0)}
+                </span>
+                <div className="flex h-3 rounded-sm overflow-hidden border border-gray-200">
+                  {legendStops.map((stop, i) => {
+                    const score = minScore + (maxScore - minScore) * stop;
+                    return (
+                      <div
+                        key={i}
+                        className="w-7 h-full"
+                        style={{ backgroundColor: scoreToColor(score) }}
+                        title={score.toFixed(0)}
+                      />
+                    );
+                  })}
+                </div>
+                <span className="font-mono text-[10px] text-economist-muted w-7">
+                  {maxScore.toFixed(0)}
+                </span>
+              </div>
+              <div className="flex justify-between mt-1 px-[34px]">
+                <span className="font-sans text-[9px] text-economist-muted">Lower concern</span>
+                <span className="font-sans text-[9px] text-economist-muted">Higher concern</span>
+              </div>
+            </div>
+          </>
         ) : (
           <div className="flex items-center justify-center h-full bg-gray-50">
             <LoadingSpinner message="Loading world map..." />
